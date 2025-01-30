@@ -5,8 +5,6 @@ import com.example.jpa_re2.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -20,8 +18,6 @@ public class PostService {
         Post post = Post.builder()
                 .title(title)
                 .body(body)
-                .createDate(LocalDateTime.now())
-                .modifiedDate(LocalDateTime.now())
                 .build();
 //        Post post = new Post(
 //                null,
