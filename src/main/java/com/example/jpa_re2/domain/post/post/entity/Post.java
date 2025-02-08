@@ -35,4 +35,8 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String body;
 
+    private String comment;
+    public void addComment(String comment) {
+        this.comment = comment;
+    }
 }
