@@ -5,10 +5,12 @@ import com.example.jpa_re2.domain.post.comment.service.CommentService;
 import com.example.jpa_re2.domain.post.post.entity.Post;
 import com.example.jpa_re2.domain.post.post.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,10 +21,10 @@ public class BaseInitData {
 
     @Bean
     @Order(1)
-    public ApplicationRunner applicationRunner(){
-        return  args -> {
+    public ApplicationRunner applicationRunner() {
+        return args -> {
 
-            if(postService.count() > 0){
+            if (postService.count() > 0) {
                 return;
             }
 
@@ -35,68 +37,25 @@ public class BaseInitData {
 
     @Bean
     @Order(2)
-    public ApplicationRunner applicationRunner2(){
-        return  args -> {
+    public ApplicationRunner applicationRunner2() {
+        return new ApplicationRunner() {
+            @Override
+            @Transactional
+            public void run(ApplicationArguments args) throws Exception {
 
-            Post post = postService.findById(1L).get();
+                Post post = postService.findById(1L).get();
 
-            if(commentService.count() > 0){
-                return;
+                if (commentService.count() > 0) {
+                    return;
+                }
+
+                Comment c5 = Comment.builder()
+                        .body("comment5")
+                        .build();
+
+                post.addComment(c5);
             }
-
-            Comment c1 = commentService.write(post.getId(), "comment1");
-            Comment c2 = commentService.write(post.getId(), "comment2");
-            Comment c3 = commentService.write(post.getId(), "comment3");
-
-            //1번 게시글 댓글
-
-            Post parent = postService.findById(c1.getPostId()).get();
-            System.out.println(c1.getId() + "번 댓글의 부모 게시글 번호는"+c1.getPostId()+"입니다.");
-            System.out.println(c1.getId() + "번 댓글의 부모 게시글 제목은"+parent.getTitle()+"입니다.");
-
-
-            post.addComment("comment1");
         };
     }
-
-
-//
-//    @Bean
-//    @Order(3)
-//    public  ApplicationRunner applicationRunner3(){
-//        return new ApplicationRunner() {
-//            @Override
-//            @Transactional
-//            public void run(ApplicationArguments args) throws Exception {
-//                Post p1 = postService.findById(1L).get();
-//                Post p2 = postService.findById(2L).get();
-//
-//                System.out.println("====== p1 삭제 ======");
-//                postService.delete(p1);
-//                System.out.println("====== p1 삭제 완료 ======");
-//
-//                System.out.println("====== p2 삭제 ======");
-//                postService.delete(p2);
-//                System.out.println("====== p2 삭제 완료 ======");
-//            }
-//        };
-//    }
-//
-//    @Bean
-//    @Order(4)
-//    public  ApplicationRunner applicationRunner4(){
-//        return new ApplicationRunner() {
-//            @Override
-//            @Transactional
-//            public void run(ApplicationArguments args) throws Exception {
-//                Post post = postService.findById(3L).get();
-//                System.out.println(post.getId() + "번 포스트를 가져왔습니다.");
-//
-//                System.out.println("====================================");
-//
-//                Post post2 = postService.findById(3L).get();
-//                System.out.println(post.getId() + "번 포스트를 가져왔습니다.");
-//            }
-//        };
-//    }
 }
+
