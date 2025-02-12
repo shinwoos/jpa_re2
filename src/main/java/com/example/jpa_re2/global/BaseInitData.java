@@ -5,10 +5,11 @@ import com.example.jpa_re2.domain.post.comment.service.CommentService;
 import com.example.jpa_re2.domain.post.post.entity.Post;
 import com.example.jpa_re2.domain.post.post.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.ApplicationArguments;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,43 +20,36 @@ public class BaseInitData {
     private final PostService postService;
     private final CommentService commentService;
 
+    @Autowired
+    @Lazy
+    private BaseInitData self; // 프록시
+
     @Bean
     @Order(1)
     public ApplicationRunner applicationRunner() {
         return args -> {
-
-            if (postService.count() > 0) {
-                return;
-            }
-
-            postService.write("title1", "body1");
-            postService.write("title1", "body1");
-            postService.write("title1", "body1");
-
+            self.work1();
         };
     }
 
-    @Bean
-    @Order(2)
-    public ApplicationRunner applicationRunner2() {
-        return new ApplicationRunner() {
-            @Override
-            @Transactional
-            public void run(ApplicationArguments args) throws Exception {
+    @Transactional
+    public void work1(){
 
-                Post post = postService.findById(1L).get();
+        if (postService.count() > 0) {
+            return;
+        }
 
-                if (commentService.count() > 0) {
-                    return;
-                }
+        Post p1 = postService.write("title1", "body1");
 
-                Comment c5 = Comment.builder()
-                        .body("comment5")
-                        .build();
+        Comment c1 = Comment.builder()
+                .body("comment1")
+                .build();
 
-                post.addComment(c5);
-            }
-        };
+        p1.getComments().add(c1);
+
+        commentService.write(p1, "comment1");
+
     }
+
 }
 

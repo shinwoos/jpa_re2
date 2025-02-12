@@ -38,11 +38,8 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String body;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post")
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
-    public void addComment(Comment comment) {
-        comments.add(comment);
-    }
 }

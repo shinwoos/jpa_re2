@@ -1,5 +1,6 @@
 package com.example.jpa_re2.domain.post.comment.entity;
 
+import com.example.jpa_re2.domain.post.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,7 +31,9 @@ public class Comment {
     @Setter(AccessLevel.PRIVATE)
     private LocalDateTime modifiedDate;
 
-    private long postId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="fk_post")
+    private Post post;
 
     @Column(columnDefinition = "TEXT")
     private String body;
